@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "otp": {
+      "command": "uv",
+      "args": [ "run", "--script", "otp_mcp.py" ]
+    }
+  }
+}

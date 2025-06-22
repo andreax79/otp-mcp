@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "otp-mcp"
+version = "0.1.0"
+description = "MCP Server for OTP"
+authors = [
+  {name = "Andrea Bonomi", email = "andrea.bonomi@example.com"},
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [ "fastmcp", "freakotp" ]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "isort",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+]
+
+[tool.black]
+line-length = 120
+
+[tool.coverage.run]
+source = ["otp_mcp"]
+
+[tool.coverage.report]
+exclude_lines = [ "# pragma: no cover", "if TYPE_CHECKING:" ]
+
+[tool.isort]
+profile = "black"
