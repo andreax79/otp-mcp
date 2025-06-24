@@ -8,6 +8,10 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Imports: isort](https://img.shields.io/badge/%20imports-isort-%231674b1?style=flat&labelColor=ef8336)](https://pycqa.github.io/isort/)
 
+<a href="https://glama.ai/mcp/servers/@andreax79/otp-mcp">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@andreax79/otp-mcp/badge" alt="otp-mcp-server MCP server" />
+</a>
+
 Model Context Protocol (MCP) server that provides OTP (One-Time Password) generation
 
 A Model Context Protocol (MCP) server built with FastMCP
