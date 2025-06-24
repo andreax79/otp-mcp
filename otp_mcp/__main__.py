@@ -1,11 +1,10 @@
-import argparse
 import logging
 import sys
 
+import click
 from freakotp.cli import DEFAULT_DB
-from freakotp.token import TokenDb
 
-from . import server
+from . import resource, server, tool
 
 __all__ = ["main"]
 
@@ -14,86 +13,92 @@ DEFAULT_PORT = 8000
 DEFAULT_PATH = "/mcp"
 
 
-def parse_args() -> argparse.Namespace:
-    "Parse command line arguments"
-    parser = argparse.ArgumentParser(
-        description="OTP MCP Server",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-
-    # FreakOTP arguments
-    parser.add_argument(
-        "--db",
-        default=DEFAULT_DB,
-        help=f"FreakOTP database path: {DEFAULT_DB})",
-    )
-
-    # Transport options
-    transport_group = parser.add_mutually_exclusive_group()
-    transport_group.add_argument("--stdio", action="store_true", help="Use stdio transport (default)")
-    transport_group.add_argument("--sse", action="store_true", help="Use SSE transport")
-    transport_group.add_argument("--http-stream", action="store_true", help="Use HTTP Stream transport")
-
-    # Network arguments
-    parser.add_argument(
-        "--host",
-        default=DEFAULT_HOST,
-        help=f"Host to bind to for network transports (default: {DEFAULT_HOST})",
-    )
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=DEFAULT_PORT,
-        help=f"Port to bind to for network transports (default: {DEFAULT_PORT})",
-    )
-    parser.add_argument(
-        "--path",
-        default=DEFAULT_PATH,
-        help=f"Endpoint path (default: {DEFAULT_PATH})",
-    )
-
-    # Additional common arguments
-    parser.add_argument(
-        "--log-level",
-        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-        default="INFO",
-        help="Set the logging level",
-    )
-
-    return parser.parse_args()
-
-
-def main() -> int:
-    args = parse_args()
-
+@click.command()
+@click.option(
+    "--db",
+    default=DEFAULT_DB,
+    show_default=True,
+    help="FreakOTP database path",
+    type=click.Path(),
+    envvar="FREAKOTP_DB",
+)
+@click.option(
+    "--stdio",
+    is_flag=True,
+    default=False,
+    help="Use stdio transport (default)",
+)
+@click.option("--sse", is_flag=True, default=False, help="Use SSE transport")
+@click.option(
+    "--http-stream",
+    is_flag=True,
+    default=False,
+    help="Use HTTP Stream transport",
+)
+@click.option(
+    "--host",
+    default=DEFAULT_HOST,
+    show_default=True,
+    help="Host to bind to for network transports",
+)
+@click.option(
+    "--port",
+    default=DEFAULT_PORT,
+    show_default=True,
+    type=int,
+    help="Port to bind to for network transports",
+)
+@click.option(
+    "--path",
+    default=DEFAULT_PATH,
+    show_default=True,
+    help="Endpoint path",
+)
+@click.option(
+    "--log-level",
+    type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR"]),
+    default="INFO",
+    show_default=True,
+    help="Set the logging level",
+)
+def main(
+    db,
+    stdio,
+    sse,
+    http_stream,
+    host,
+    port,
+    path,
+    log_level,
+):
     # Logging
     logging.basicConfig(
-        level=getattr(logging, args.log_level),
+        level=getattr(logging, log_level),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
 
-    # Init FreakOTP
-    server.token_db = TokenDb(args.db)
+    # Initialize the token database
+    server.init_token_db(db)
 
     try:
-        if args.http_stream:
+        if http_stream:
             # HTTP Stream Transport
             server.mcp.run(
                 transport="streamable-http",
-                host=args.host,
-                port=args.port,
-                path=args.path,
-                log_level=args.log_level,
+                host=host,
+                port=port,
+                path=path,
+                log_level=log_level,
             )
 
-        elif args.sse:
+        elif sse:
             # Server-Sent Events transport
             server.mcp.run(
                 transport="sse",
-                host=args.host,
-                port=args.port,
-                path=args.path,
-                log_level=args.log_level,
+                host=host,
+                port=port,
+                path=path,
+                log_level=log_level,
             )
         else:
             # Default to stdio transport
@@ -101,12 +106,12 @@ def main() -> int:
 
     except KeyboardInterrupt:
         print("\nServer stopped by user")
-        return 0
+        sys.exit(0)
     except Exception as ex:
         print(f"Server error: {ex}", file=sys.stderr)
-        return 1
-    return 0
+        sys.exit(1)
+    sys.exit(0)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

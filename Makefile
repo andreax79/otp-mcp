@@ -6,12 +6,13 @@ help:
 	@echo - make clean	     Clean the project directory
 	@echo - make venv	     Create a virtual environment and install dependencies
 	@echo - make inspector   Starting MCP inspector
+	@echo - make test	     Run tests with coverage
 
 isort:
-	isort --profile black otp_mcp
+	isort --profile black otp_mcp tests
 
 black: isort
-	black otp_mcp
+	black otp_mcp tests
 
 clean:
 	-rm -rf build dist pyvenv.cfg *.egg-info .venv
@@ -24,3 +25,6 @@ venv:
 
 inspector:
 	npx @modelcontextprotocol/inspector --config mcp.json --server otp
+
+test:
+	uv run pytest -v --cov=otp_mcp --cov-report=term-missing

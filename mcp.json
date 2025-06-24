@@ -2,7 +2,10 @@
   "mcpServers": {
     "otp": {
       "command": "uv",
-      "args": [ "run", "--script", "otp_mcp.py" ]
+      "args": [ "run", "--script", "otp_mcp.py" ],
+      "env": {
+        "FREAKOTP_DB": "tests/test.db"
+      }
     }
   }
 }

@@ -3,19 +3,25 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "otp-mcp"
+name = "otp-mcp-server"
 version = "0.1.0"
 description = "MCP Server for OTP"
 authors = [
   {name = "Andrea Bonomi", email = "andrea.bonomi@example.com"},
 ]
 readme = "README.md"
+keywords = [ "otp", "mcp", "totp", "web-automation", "ai-tools", "mcp-server" ]
 requires-python = ">=3.11"
-dependencies = [ "fastmcp", "freakotp" ]
-license = {text = "MIT"}
+dependencies = [
+    "click",
+    "fastmcp",
+    "freakotp",
+    "securid"
+]
+license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
 
@@ -27,6 +33,13 @@ dev = [
     "pytest-asyncio",
     "pytest-cov",
 ]
+
+[project.urls]
+GitHub = "https://github.com/andreax79/otp-mcp"
+Issues = "https://github.com/andreax79/otp-mcp/issues"
+
+[project.scripts]
+otp-mcp-server = "otp_mcp.__main__:main"
 
 [tool.black]
 line-length = 120
