@@ -1,12 +1,14 @@
 SHELL=/bin/bash -e
 
+.PHONY: help isort black clean venv inspector test
+
 help:
-	@echo - make isort	     Run isort to sort imports
-	@echo - make black	 	 Run black to format code
-	@echo - make clean	     Clean the project directory
-	@echo - make venv	     Create a virtual environment and install dependencies
+	@echo - make isort       Run isort to sort imports
+	@echo - make black       Run black to format code
+	@echo - make clean       Clean the project directory
+	@echo - make venv        Create a virtual environment and install dependencies
 	@echo - make inspector   Starting MCP inspector
-	@echo - make test	     Run tests with coverage
+	@echo - make test        Run tests with coverage
 
 isort:
 	isort --profile black otp_mcp tests

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "otp-mcp-server"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP Server for OTP"
 authors = [
   {name = "Andrea Bonomi", email = "andrea.bonomi@example.com"},
