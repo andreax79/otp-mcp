@@ -23,6 +23,7 @@
 #
 
 import logging
+import os
 import sys
 
 import click
@@ -44,7 +45,7 @@ DEFAULT_PATH = "/mcp"
     show_default=True,
     help="FreakOTP database path",
     type=click.Path(),
-    envvar="FREAKOTP_DB",
+    envvar="OTP_MCP_SERVER_DB",
 )
 @click.option(
     "--stdio",
@@ -52,7 +53,12 @@ DEFAULT_PATH = "/mcp"
     default=False,
     help="Use stdio transport (default)",
 )
-@click.option("--sse", is_flag=True, default=False, help="Use SSE transport")
+@click.option(
+    "--sse",
+    is_flag=True,
+    default=False,
+    help="Use SSE transport",
+)
 @click.option(
     "--http-stream",
     is_flag=True,
@@ -71,12 +77,14 @@ DEFAULT_PATH = "/mcp"
     show_default=True,
     type=int,
     help="Port to bind to for network transports",
+    envvar="OTP_MCP_SERVER_PORT",
 )
 @click.option(
     "--path",
     default=DEFAULT_PATH,
     show_default=True,
     help="Endpoint path",
+    envvar="OTP_MCP_SERVER_PATH",
 )
 @click.option(
     "--log-level",
@@ -84,6 +92,7 @@ DEFAULT_PATH = "/mcp"
     default="INFO",
     show_default=True,
     help="Set the logging level",
+    envvar="OTP_MCP_SERVER_LOG_LEVEL",
 )
 def main(
     db,
@@ -95,11 +104,32 @@ def main(
     path,
     log_level,
 ):
+    if not stdio and not sse and not http_stream:
+        otp_mcp_server_transport = os.environ.get("OTP_MCP_SERVER_TRANSPORT", "")
+        if otp_mcp_server_transport == "sse":
+            # Server-Sent Events transport
+            sse = True
+        elif otp_mcp_server_transport == "http-stream":
+            # HTTP Stream transport
+            http_stream = True
+        elif otp_mcp_server_transport in ("", "stdio"):
+            # Default to stdio transport if no other transport is specified
+            stdio = True
+        else:
+            raise click.UsageError("Invalid transport specified.")
+
     # Logging
     logging.basicConfig(
         level=getattr(logging, log_level),
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     )
+    logging.info("Starting OTP MCP server with parameters:")
+    logging.info(f"  Database: {db}")
+    logging.info(f"  Transport: {'sse' if sse else 'http-stream' if http_stream else 'stdio'}")
+    logging.info(f"  Host: {host}")
+    logging.info(f"  Port: {port}")
+    logging.info(f"  Path: {path}")
+    logging.info(f"  Log Level: {log_level}")
 
     # Initialize the token database
     server.init_token_db(db)
@@ -132,7 +162,7 @@ def main(
         print("\nServer stopped by user")
         sys.exit(0)
     except Exception as ex:
-        print(f"Server error: {ex}", file=sys.stderr)
+        logging.error(f"Server error: {ex}")
         sys.exit(1)
     sys.exit(0)
 

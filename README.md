@@ -59,3 +59,17 @@ Add to your Claude Desktop configuration:
   }
 }
 ```
+
+### Configuration
+
+You can configure the server using command-line arguments or environment variables.
+
+| Environment Variable      | Description                                  |
+|---------------------------|----------------------------------------------|
+| `OTP_MCP_SERVER_DB`       | Path to the tokens database file             |
+| `OTP_MCP_SERVER_HOST`     | Host to bind the server to                   |
+| `OTP_MCP_SERVER_PORT`     | Port to bind the server to                   |
+| `OTP_MCP_SERVER_TRANSPORT`| Transport protocol to use                    |
+| `OTP_MCP_SERVER_PATH`     | Path for HTTP transport                      |
+| `OTP_MCP_SERVER_LOG_LEVEL`| Logging level                                |
+

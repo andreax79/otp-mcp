@@ -1,5 +1,8 @@
 SHELL=/bin/bash -e
 
+VERSION := $(shell grep '^version = ' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+IMAGE_NAME := otp-mcp
+
 .PHONY: help isort black clean venv inspector test
 
 help:
@@ -30,3 +33,14 @@ inspector:
 
 test:
 	uv run pytest -v --cov=otp_mcp --cov-report=term-missing
+
+tag:
+	git tag v${VERSION}
+
+image:
+	@DOCKER_BUILDKIT=1 docker build \
+		 --tag ${IMAGE_NAME} \
+		 --tag ${IMAGE_NAME}:latest \
+		 --tag ${IMAGE_NAME}:${VERSION} \
+		 .
+
